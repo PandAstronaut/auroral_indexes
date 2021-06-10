@@ -40,7 +40,8 @@ colnumber = [(0, 4),     # Year (4 digit)
              (24, 26),   # Day 000 ... 366
              (31, 40),   # X [nT]
              (41, 50),   # Y [nT]
-             (51, 60)]   # Z [nT]
+             (51, 60),   # Z [nT]
+             (61, 70)]   # F [nT]
 
 #Creation of the column names for the DataFrame
 station_code = filename[0:3].upper()
@@ -48,7 +49,8 @@ columnx = station_code + '_X'
 columny = station_code + '_Y'
 columnz = station_code + '_Z'
 columnh = station_code + '_H'
-colnames = ['year', 'month', 'day', 'hr', 'min', 'sec', 'DOY', columnx, columny, columnz]
+columnf = station_code + '_F'
+colnames = ['year', 'month', 'day', 'hr', 'min', 'sec', 'DOY', columnx, columny, columnz, columnf]
 
 "86400s in a day"
 
@@ -56,7 +58,6 @@ colnames = ['year', 'month', 'day', 'hr', 'min', 'sec', 'DOY', columnx, columny,
 for i in range(0,2):
     magdata = pd.read_fwf(filePath, colspecs=colnumber, names=colnames, skiprows = 86400*i, nrows = 86400*(i+1))
     magdata[columnh] = np.sqrt(magdata[columnx]*magdata[columnx] + magdata[columny]*magdata[columny])
-
     del magdata
 
 

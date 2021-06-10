@@ -3,11 +3,15 @@
 Created on Thu Jun  3 09:58:50 2021
 @author: Bastien Longeon
 
-This code plots the magnetogram of one magdata column.
-It was created to facilitate plotting of graphics.
+This code plots 1, 2 and 3D plots with the color changing each time a graph has
+been made. It takes data coming from pandas DataFrame.
 """
+# import matplotlib
 import matplotlib.pyplot as plt
 import modules.global_graph as gb
+import numpy as np
+from matplotlib.ticker import AutoMinorLocator
+
 
 plot_color = [
         '#000000',   # 0: black
@@ -25,15 +29,23 @@ plot_color = [
 
 markers = ['o', '+', 'x', 'X', 'D', '>', '<', '^', 'v' '.', 'v']
 
-# In the magdata used, it's important to have a vector 'hour' for this code to work
-def plot_1D(magdata, column, title, xlab, ylab, position='lower left'):
-    plt.figure(dpi=600)
+# The location is in best by default but it can happen that the location chosen
+# by matplotlib is not optimal. That's why location is kept as a parameter to
+# be able to change it in case of bad choice from matplotlib.
+def plot_1D(magdata, column, title, xlab, ylab, location='best'):
+    plt.figure(dpi=200)
+    a = plt.subplot()
     plt.plot(magdata['hour'], magdata[column], linewidth=.4, color=plot_color[gb.color%12],
     linestyle='-', label=column)
     plt.title(title, fontsize=14)
     plt.grid(b=True)
-    plt.legend(loc=position, fontsize= 8)
-    if xlab == 'Time in hours': plt.xlim([0, 24])
+    plt.legend(loc=location, fontsize= 8)
+    if xlab == 'Time in hours':
+            plt.xlim([0, 24])
+            plt.xticks(np.arange(0,25,4)) # Show the last tick of the x-axes to see the 24-hours mark
+            a.xaxis.set_minor_locator(AutoMinorLocator(4))
+            plt.tick_params('x', which='minor', length=6)
+            plt.tick_params('x', which='major', length=8)
     plt.xlabel(xlab, fontsize=12)
     plt.ylabel(ylab, fontsize=12)
     plt.show()   # This is to display the plot
@@ -41,8 +53,9 @@ def plot_1D(magdata, column, title, xlab, ylab, position='lower left'):
 
 
 def plot_2D(magdata, horizontal1, vertical1, horizontal2, vertical2, title,
-            xlab, ylab, position='lower left', mark = False):
-    plt.figure(dpi=600)
+            xlab, ylab, location='best', mark = False):
+    plt.figure(dpi=200)
+    a = plt.subplot()
     plt.plot(magdata[horizontal1], magdata[vertical1], linewidth=.4, color=plot_color[gb.color%12],
     linestyle='-', label=vertical1)
     if mark: marker_plot(magdata, horizontal1, vertical1)
@@ -53,15 +66,21 @@ def plot_2D(magdata, horizontal1, vertical1, horizontal2, vertical2, title,
     gb.color += 1
     plt.title(title, fontsize=14)
     plt.grid(b=True)
-    if xlab == 'Time in hours': plt.xlim([0, 24])
-    plt.legend(loc=position, fontsize= 8)
+    if xlab == 'Time in hours':
+            plt.xlim([0, 24])
+            plt.xticks(np.arange(0,25,4)) # Show the last tick of the x-axes to see the 24-hours mark
+            a.xaxis.set_minor_locator(AutoMinorLocator(4))
+            plt.tick_params('x', which='minor', length=6)
+            plt.tick_params('x', which='major', length=8)
+    plt.legend(loc=location, fontsize= 8)
     plt.xlabel(xlab, fontsize=12)
     plt.ylabel(ylab, fontsize=12)
     plt.show()
 
 def plot_3D(magdata, horizontal1, vertical1, horizontal2, vertical2, horizontal3,
-            vertical3, title, xlab, ylab, position='lower left'):
-    plt.figure(dpi=600)
+            vertical3, title, xlab, ylab, location='best'):
+    plt.figure(dpi=200)
+    a = plt.subplot()
     plt.plot(magdata[horizontal1], magdata[vertical1], linewidth=.4, color=plot_color[gb.color%12],
     linestyle='-', label=vertical1)
     gb.color += 1
@@ -73,8 +92,13 @@ def plot_3D(magdata, horizontal1, vertical1, horizontal2, vertical2, horizontal3
     gb.color += 1
     plt.title(title, fontsize=14)
     plt.grid(b=True)
-    if xlab == 'Time in hours': plt.xlim([0, 24])
-    plt.legend(loc=position, fontsize= 8)
+    if xlab == 'Time in hours':
+            plt.xlim([0, 24])
+            plt.xticks(np.arange(0,25,4)) # Show the last tick of the x-axes to see the 24-hours mark
+            a.xaxis.set_minor_locator(AutoMinorLocator(4))
+            plt.tick_params('x', which='minor', length=6)
+            plt.tick_params('x', which='major', length=8)
+    plt.legend(loc=location, fontsize= 8)
     plt.xlabel(xlab, fontsize=12)
     plt.ylabel(ylab, fontsize=12)
     plt.show()

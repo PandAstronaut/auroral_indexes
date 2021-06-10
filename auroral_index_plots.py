@@ -66,8 +66,8 @@ magdata[columnh] = np.sqrt(magdata[columnx]*magdata[columnx] + magdata[columny]*
 # corresponding to one value of B
 magdata['hour'] = (magdata['hr']*3600 + magdata['min']*60 + magdata['sec'])/3600
 
-plotter.plot_1D(magdata, columnh, 'Horizontal component of the magnetic field - 2017/09/08','lower right')
-plotter.plot_1D(magdata, columnz, 'Vertical component of the magnetic field - 2017/09/08')
+plotter.plot_1D(magdata, columnh, 'Horizontal component of the magnetic field - 2017/09/08', 'Time in hours', '[nT]')
+plotter.plot_1D(magdata, columnz, 'Vertical component of the magnetic field - 2017/09/08', 'Time in hours', '[nT]')
 
                 ###              Auroral Indexes              ####
 auroral_index = pd.DataFrame() #Creation of the DataFrame that will store the auroral indexes
@@ -81,39 +81,41 @@ auroral_index['Auroral_Index_1_2_H'] = aur.auroral_index1_2(magdata, 'KIR_H')
 auroral_index['Auroral_Index_1_1_Z'] = aur.auroral_index1_1(magdata, 'KIR_Z')
 auroral_index['Auroral_Index_1_2_Z'] = aur.auroral_index1_2(magdata, 'KIR_Z')
 
-plotter.plot_1D(auroral_index,'Auroral_Index_1_1_H', 'Horizontal Auroral Index 1(1) - 2017/09/08', 'lower right')
-plotter.plot_1D(auroral_index,'Auroral_Index_1_1_Z', 'Vertical Auroral Index 1(1) - 2017/09/08', 'lower right')
-plotter.plot_1D(auroral_index,'Auroral_Index_1_2_H', 'Horizontal Auroral Index 1(2) - 2017/09/08', 'upper right')
-plotter.plot_1D(auroral_index,'Auroral_Index_1_2_Z', 'Vertical Auroral Index 1(2) - 2017/09/08', 'upper right')
+plotter.plot_1D(auroral_index,'Auroral_Index_1_1_H', 'Horizontal Auroral Index 1(1) - 2017/09/08', 'Time in hours', '[nT]')
+plotter.plot_1D(auroral_index,'Auroral_Index_1_1_Z', 'Vertical Auroral Index 1(1) - 2017/09/08', 'Time in hours', '[nT]')
+plotter.plot_1D(auroral_index,'Auroral_Index_1_2_H', 'Horizontal Auroral Index 1(2) - 2017/09/08', 'Time in hours', '[nT]', 'upper right')
+plotter.plot_1D(auroral_index,'Auroral_Index_1_2_Z', 'Vertical Auroral Index 1(2) - 2017/09/08', 'Time in hours','[nT]')
 
                 ###              Auroral Index 2              ####
 auroral_index['Auroral_Index_2_H'] = aur.auroral_index2(magdata, 18000, 36000, 'KIR_H')
 auroral_index['Auroral_Index_2_Z'] = aur.auroral_index2(magdata, 18000, 43200, 'KIR_Z')
 
-plotter.plot_1D(auroral_index,'Auroral_Index_2_H' , 'Horizontal Auroral Index 2 - 2017/09/08', 'lower right')
-plotter.plot_1D(auroral_index,'Auroral_Index_2_Z' , 'Vertical Auroral Index 2 - 2017/09/08')
+plotter.plot_1D(auroral_index,'Auroral_Index_2_H' , 'Horizontal Auroral Index 2 - 2017/09/08', 'Time in hours','[nT]')
+plotter.plot_1D(auroral_index,'Auroral_Index_2_Z' , 'Vertical Auroral Index 2 - 2017/09/08', 'Time in hours','[nT]')
 
                 ###              2D Plot              ####
 plotter.plot_2D(auroral_index, 'Auroral_Index_1_1_H', 'Auroral_Index_2_H', 'Auroral_Index_1_2_H',
                 'Auroral_Index_2_H', 'Horizontal Auroral index 2 = f(Auroral index 1(1) & 1(2))',
-                'upper left', True)
+                '[nT]','[nT]', mark = True)
 plotter.plot_2D(auroral_index, 'Auroral_Index_1_1_Z', 'Auroral_Index_2_Z', 'Auroral_Index_1_2_Z',
-                'Auroral_Index_2_Z', 'Vertical Auroral index 2 = f(Auroral index 1(1) & 1(2))', mark=True)
+                'Auroral_Index_2_Z', 'Vertical Auroral index 2 = f(Auroral index 1(1) & 1(2))',
+                '[nT]','[nT]', location = 'lower left', mark = True)
 
 plotter.plot_2D(auroral_index, 'hour', 'Auroral_Index_1_1_H', 'hour', 'Auroral_Index_1_2_H',
-                'Horizontal Auroral Index 1(1) & 1(2)')
+                'Horizontal Auroral Index 1(1) & 1(2)', 'Time in hours','[nT]')
 plotter.plot_2D(auroral_index, 'hour', 'Auroral_Index_1_1_Z', 'hour', 'Auroral_Index_1_2_Z',
-                'Vertical Auroral Index 1(1) & 1(2)')
+                'Vertical Auroral Index 1(1) & 1(2)', 'Time in hours','[nT]')
 
                 ###              3D Plot              ####
 plotter.plot_3D(auroral_index, 'hour', 'Auroral_Index_1_1_H', 'hour',
                 'Auroral_Index_1_2_H','hour', 'Auroral_Index_2_H',
                 'Horizontal Auroral index 1(1), 1(2) and 2 in function of time',
-                'lower right')
+                'Time in hours','[nT]')
+
 plotter.plot_3D(auroral_index, 'hour', 'Auroral_Index_1_1_Z', 'hour',
                 'Auroral_Index_1_2_Z','hour', 'Auroral_Index_2_Z',
                 'Vertical Auroral index 1(1), 1(2) and 2 in function of time',
-                'upper right')
+                'Time in hours','[nT]')
 
                 ###              Execution time              ####
 executionTime = (time.time() - startTime)
