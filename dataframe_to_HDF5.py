@@ -26,16 +26,29 @@ columnz = station + '_Z'
 columnh = station + '_H'
 colnames = [columnx, columny, columnz]
 folder = 'maggraphs/'
-station_year = 'kir20'
+station_dec = 'kir20'
 extension_sec = '09dsec.sec'
 extension_hdf = '09sec.hdf5'
 
 for i in range(11,21):
-    filePath = folder + station_year + str(i) + extension_sec
-    filename = folder + station_year + str(i) + extension_hdf # Corresponds to the path + filename
+    print('Processing data for the {} of september 2017'.format(i+1))
+    filePath = folder + station_dec + str(i) + extension_sec
+    filename = folder + station_dec + str(i) + extension_hdf # Corresponds to the path + filename
     magdata = pd.read_fwf(filePath, colspecs=colnumber, names=colnames)
     magdata[columnh] = np.sqrt(magdata[columnx]*magdata[columnx] + magdata[columny]*magdata[columny])
     magdata.to_hdf(filename, 'data', mode='w') # 'data' is the key used to access the data in the .hdf5
+    for i in range(0,86400):
+        if magdata[columnx].iloc[i] > 1000:
+            magdata[columnx].iloc[i] = np.nan
+        if magdata[columny].iloc[i] > 10000:
+            magdata[columny].iloc[i] = np.na
+        if magdata[columnz].iloc[i] > 70000:
+            magdata[columnz].iloc[i] = np.nan
+        if magdata[columnh].iloc[i] > 30000:
+            magdata[columnh].iloc[i] = np.nan
+
+magdata = pd.read_hdf(filename)
+
 
                 ###              Execution time              ####
 executionTime = (time.time() - startTime)
