@@ -31,22 +31,34 @@ extension_sec = '09dsec.sec'
 extension_hdf = '09sec.hdf5'
 
 for i in range(11,21):
-    print('---- Processing data for september 20{} ----'.format(i))
+    print('----     Reading data from september 20{}    ----'.format(i))
     filePath = folder + station_dec + str(i) + extension_sec
     filename = folder + station_dec + str(i) + extension_hdf # Corresponds to the path + filename
     magdata = pd.read_fwf(filePath, colspecs=colnumber, names=colnames)
+    print('----           Removing errors               ----')
+    magdata[columnx].replace(to_replace= 99999.0, value=np.nan, inplace=True)
+    magdata[columny].replace(to_replace= 99999.0, value=np.nan, inplace=True)
+    magdata[columnz].replace(to_replace= 99999.0, value=np.nan, inplace=True)
     magdata[columnh] = np.sqrt(magdata[columnx]*magdata[columnx] + magdata[columny]*magdata[columny])
-    for i in range(0,2592000):
-        if magdata[columnx].iloc[i] > 50000:
-            magdata[columnx].iloc[i] = np.nan
-        if magdata[columny].iloc[i] > 10000:
-            magdata[columny].iloc[i] = np.na
-        if magdata[columnz].iloc[i] > 80000:
-            magdata[columnz].iloc[i] = np.nan
-        if magdata[columnh].iloc[i] > 30000:
-            magdata[columnh].iloc[i] = np.nan
+    print('----           Correcting anomalies          ----')
+    anomalies = 0
+    for j in range(0,2592000):
+        if magdata[columnx].iloc[j] > 30000:
+            magdata[columnx].iloc[j] = np.nan
+            anomalies += 1
+        if magdata[columny].iloc[j] > 1000:
+            magdata[columny].iloc[j] = np.nan
+            anomalies += 1
+        if magdata[columnz].iloc[j] > 70000:
+            magdata[columnz].iloc[j] = np.nan
+            anomalies += 1
+        if magdata[columnh].iloc[j] > 30000:
+            magdata[columnh].iloc[j] = np.nan
+            anomalies += 1
     magdata.to_hdf(filename, 'data', mode='w') # 'data' is the key used to access the data in the .hdf5
-
+    print('----   {} anomalies detected and corrected   ----'.format(anomalies))
+    executionTime = (time.time() - startTime)
+    print('----          Elapsed time: {0:.2f}s         ----'.format(executionTime))
 
                 ###              Execution time              ####
 executionTime = (time.time() - startTime)
