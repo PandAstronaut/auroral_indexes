@@ -21,15 +21,6 @@ import time
 ###              Define the file to read              ####
 path = "maggraphs/"
 
-
-###              Format of the file we read              ####
-#--IAGA2002---*----2----*----3----*----4----*----5----*----6----*----7
-#DATE       TIME         DOY     ***X      ***Y      ***Z      ***F   |
-#YYY-MM-DD hh:mm:ss:000 DOY     *****.**  *****.**  *****.**  *****.**
-#---*----1----*----2----*----3----*----4----*----5----*----6----*----7
-
-#The tuples in colnumber are the interval in wich we can find the information
-#linked in the commentary next to each
 colnumber = [(31, 40),   # X [nT]
              (41, 50),   # Y [nT]
              (51, 60)]   # Z [nT]

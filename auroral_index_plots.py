@@ -101,12 +101,12 @@ plotter.plot_2D(auroral_index, 'Auroral_Index_1_1_Z', 'Auroral_Index_2_Z', 'Auro
                 'Auroral_Index_2_Z', 'Vertical Auroral index 2 = f(Auroral index 1(1) & 1(2))',
                 '[nT]','[nT]', location = 'lower left', mark = True)
 
-plotter.plot_2D_scatter(auroral_index, 'Auroral_Index_1_1_H', 'Auroral_Index_2_H', 'Auroral_Index_1_2_H',
+distribution1 = plotter.plot_2D_scatter(auroral_index, 'Auroral_Index_1_1_H', 'Auroral_Index_2_H', 'Auroral_Index_1_2_H',
                 'Auroral_Index_2_H', 'Horizontal Auroral index 2 = f(Auroral index 1(1) & 1(2))',
-                '[nT]','[nT]')
-plotter.plot_2D_scatter(auroral_index, 'Auroral_Index_1_1_Z', 'Auroral_Index_2_Z', 'Auroral_Index_1_2_Z',
+                '[nT]','log(dB) [nT]')
+distribution2 = plotter.plot_2D_scatter(auroral_index, 'Auroral_Index_1_1_Z', 'Auroral_Index_2_Z', 'Auroral_Index_1_2_Z',
                 'Auroral_Index_2_Z', 'Vertical Auroral index 2 = f(Auroral index 1(1) & 1(2))',
-                '[nT]','[nT]', location = 'lower left')
+                '[nT]','log(dB) [nT]', location = 'lower left')
 
 plotter.plot_2D(auroral_index, 'hour', 'Auroral_Index_1_1_H', 'hour', 'Auroral_Index_1_2_H',
                 'Horizontal Auroral Index 1(1) & 1(2)', 'Time in hours','[nT]')

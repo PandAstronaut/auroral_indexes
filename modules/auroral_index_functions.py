@@ -3,7 +3,6 @@
 Created on Fri Jun  4 09:15:24 2021
 @author: Bastien Longeon
 """
-
 offsetZ = {2011:51657,
            2012:51695,
            2013:51725,

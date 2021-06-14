@@ -6,11 +6,12 @@ Created on Thu Jun  3 09:58:50 2021
 This code plots 1, 2 and 3D plots with the color changing each time a graph has
 been made. It takes data coming from pandas DataFrame.
 """
-# import matplotlib
 import matplotlib.pyplot as plt
 import modules.global_graph as gb
 import numpy as np
 from matplotlib.ticker import AutoMinorLocator
+from scipy import stats
+from mpl_toolkits.mplot3d import Axes3D
 
 
 plot_color = [
@@ -81,36 +82,26 @@ def plot_2D_scatter(magdata, horizontal1, vertical1, horizontal2, vertical2, tit
             xlab, ylab, location='best'):
     fig = plt.figure(dpi=200)
     ax = fig.add_subplot(1,1,1)
-    x_axis = list()
-    y_marker = list()
-    x_axis2 = list()
-    y_marker2 = list()
-    annotations=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,
-                  1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-    for i in range(59,1440,60):
-        x_axis.append(magdata[horizontal1].iloc[i])
-        y_marker.append(magdata[vertical1].iloc[i])
-        ax.scatter(x_axis, y_marker, s=8, facecolors=plot_color[gb.color%12],
-                    edgecolors=plot_color[gb.color%12], label = horizontal1)
+    x_axis = magdata[horizontal1]
+    y_marker = np.sign(magdata[vertical1])*np.log10(abs(magdata[vertical1]))
+    x_axis2 = magdata[horizontal2]
+    y_marker2 = np.sign(magdata[vertical2])*np.log10(abs(magdata[vertical2]))
+    ax.scatter(x_axis, y_marker, s=.5, facecolors=plot_color[gb.color%12],
+               edgecolors=plot_color[gb.color%12], label = 'dB/dt_1min')
     gb.color += 1
-    for i in range(59,1440,60):
-        x_axis2.append(magdata[horizontal2].iloc[i])
-        x_axis.append(magdata[horizontal2].iloc[i])
-        y_marker2.append(magdata[vertical2].iloc[i])
-        y_marker.append(magdata[vertical2].iloc[i])
-        ax.scatter(x_axis2, y_marker2, s=8, facecolors=plot_color[gb.color%12],
-                    edgecolors=plot_color[gb.color%12], label = horizontal2)
+    ax.scatter(x_axis2, y_marker2, s=.5, facecolors=plot_color[gb.color%12],
+               edgecolors=plot_color[gb.color%12], label = '<dB/dt>_1min')
     gb.color += 1
     plt.title(title, fontsize=14)
     plt.grid(b=True)
-    for i, label in enumerate(annotations):
-        plt.annotate(label, (x_axis[i], y_marker[i]),fontsize=8)
     handles, labels = plt.gca().get_legend_handles_labels()
     by_label = dict(zip(labels, handles))
     plt.legend(by_label.values(), by_label.keys())
     plt.xlabel(xlab, fontsize=12)
     plt.ylabel(ylab, fontsize=12)
     plt.show()
+    return (distribution(x_axis, y_marker), distribution(x_axis2, y_marker2))
+
 
 def plot_3D(magdata, horizontal1, vertical1, horizontal2, vertical2, horizontal3,
             vertical3, title, xlab, ylab, location='best'):
@@ -147,3 +138,10 @@ def marker_plot(magdata, horizontal, vertical):
     plt.plot(x_axis, y_marker, marker = 'o', markersize = 2,
              linestyle = 'None', markerfacecolor = plot_color[gb.color%12],
              markeredgecolor = plot_color[gb.color%12])
+
+
+def distribution(x, y):
+    binx = np.arange(min(x),max(x), 0.1)
+    biny = np.arange(min(y),max(y), 0.5)
+    ret = stats.binned_statistic_2d(x, y, None, 'count', bins=[binx, biny])
+    return ret.statistic
