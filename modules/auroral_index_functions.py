@@ -4,6 +4,28 @@ Created on Fri Jun  4 09:15:24 2021
 @author: Bastien Longeon
 """
 
+offsetZ = {2011:51657,
+           2012:51695,
+           2013:51725,
+           2014:51750,
+           2015:51800,
+           2016:51847,
+           2017:51918,
+           2018:51950,
+           2019:52000,
+           2020:52055}
+
+offsetH = {2011:10700,
+           2012:10680,
+           2013:10680,
+           2014:10650,
+           2015:10640,
+           2016:10640,
+           2017:10600,
+           2018:10588,
+           2019:10584,
+           2020:10560}
+
 def auroral_index1_1 (magdata, data):
     """
                         AURORAL INDEX 1_1:
@@ -49,7 +71,7 @@ def auroral_index1_2 (magdata, data):
     return mean # We actually return dBAC(2) = <dB_1s(t-60s):dB_1s(t)>
 
 
-def auroral_index2 (magdata,range_min, range_max, data):
+def auroral_index2 (magdata, data, year):
     """
                             AURORAL INDEX 2:
                             dBDC = <B>_1min – B0
@@ -57,14 +79,9 @@ def auroral_index2 (magdata,range_min, range_max, data):
     ----------
     magdata : DataFrame
         DF of all the magnetometer data
-    range_min : int
-    range_max : int
-        range_min/max defines the period where the activity is minimal to null
-        to compute B0.
     data : string
         data corresponds to the string colname of the data we want to work with.
         i.e. KIR_H.
-
     Returns
     -------
     mean : list
@@ -73,10 +90,10 @@ def auroral_index2 (magdata,range_min, range_max, data):
     iloc is used to access a specific index in a DataFrame
     range(0,60) is actually 0 to 59 so 60 iterations
     """
-    x = 0
-    for i in range(range_min, range_max):
-        x += magdata[data].iloc[i]
-    b0 = int(x/len(range(range_min,range_max))) # int for more simplicity
+    if data[-1].lower() == 'h':
+        b0 = offsetH[year]
+    if data[-1].lower() == 'z':
+        b0 = offsetZ[year]
 
     mean = list()
     for h in range(0,24): # For each hour in a day

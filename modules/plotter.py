@@ -77,6 +77,41 @@ def plot_2D(magdata, horizontal1, vertical1, horizontal2, vertical2, title,
     plt.ylabel(ylab, fontsize=12)
     plt.show()
 
+def plot_2D_scatter(magdata, horizontal1, vertical1, horizontal2, vertical2, title,
+            xlab, ylab, location='best'):
+    fig = plt.figure(dpi=200)
+    ax = fig.add_subplot(1,1,1)
+    x_axis = list()
+    y_marker = list()
+    x_axis2 = list()
+    y_marker2 = list()
+    annotations=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,
+                  1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
+    for i in range(59,1440,60):
+        x_axis.append(magdata[horizontal1].iloc[i])
+        y_marker.append(magdata[vertical1].iloc[i])
+        ax.scatter(x_axis, y_marker, s=8, facecolors=plot_color[gb.color%12],
+                    edgecolors=plot_color[gb.color%12], label = horizontal1)
+    gb.color += 1
+    for i in range(59,1440,60):
+        x_axis2.append(magdata[horizontal2].iloc[i])
+        x_axis.append(magdata[horizontal2].iloc[i])
+        y_marker2.append(magdata[vertical2].iloc[i])
+        y_marker.append(magdata[vertical2].iloc[i])
+        ax.scatter(x_axis2, y_marker2, s=8, facecolors=plot_color[gb.color%12],
+                    edgecolors=plot_color[gb.color%12], label = horizontal2)
+    gb.color += 1
+    plt.title(title, fontsize=14)
+    plt.grid(b=True)
+    for i, label in enumerate(annotations):
+        plt.annotate(label, (x_axis[i], y_marker[i]),fontsize=8)
+    handles, labels = plt.gca().get_legend_handles_labels()
+    by_label = dict(zip(labels, handles))
+    plt.legend(by_label.values(), by_label.keys())
+    plt.xlabel(xlab, fontsize=12)
+    plt.ylabel(ylab, fontsize=12)
+    plt.show()
+
 def plot_3D(magdata, horizontal1, vertical1, horizontal2, vertical2, horizontal3,
             vertical3, title, xlab, ylab, location='best'):
     plt.figure(dpi=200)

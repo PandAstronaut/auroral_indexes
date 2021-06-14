@@ -87,8 +87,8 @@ plotter.plot_1D(auroral_index,'Auroral_Index_1_2_H', 'Horizontal Auroral Index 1
 plotter.plot_1D(auroral_index,'Auroral_Index_1_2_Z', 'Vertical Auroral Index 1(2) - 2017/09/08', 'Time in hours','[nT]')
 
                 ###              Auroral Index 2              ####
-auroral_index['Auroral_Index_2_H'] = aur.auroral_index2(magdata, 18000, 36000, 'KIR_H')
-auroral_index['Auroral_Index_2_Z'] = aur.auroral_index2(magdata, 18000, 43200, 'KIR_Z')
+auroral_index['Auroral_Index_2_H'] = aur.auroral_index2(magdata, 'KIR_H', 2017)
+auroral_index['Auroral_Index_2_Z'] = aur.auroral_index2(magdata, 'KIR_Z', 2017)
 
 plotter.plot_1D(auroral_index,'Auroral_Index_2_H' , 'Horizontal Auroral Index 2 - 2017/09/08', 'Time in hours','[nT]')
 plotter.plot_1D(auroral_index,'Auroral_Index_2_Z' , 'Vertical Auroral Index 2 - 2017/09/08', 'Time in hours','[nT]')
@@ -100,6 +100,13 @@ plotter.plot_2D(auroral_index, 'Auroral_Index_1_1_H', 'Auroral_Index_2_H', 'Auro
 plotter.plot_2D(auroral_index, 'Auroral_Index_1_1_Z', 'Auroral_Index_2_Z', 'Auroral_Index_1_2_Z',
                 'Auroral_Index_2_Z', 'Vertical Auroral index 2 = f(Auroral index 1(1) & 1(2))',
                 '[nT]','[nT]', location = 'lower left', mark = True)
+
+plotter.plot_2D_scatter(auroral_index, 'Auroral_Index_1_1_H', 'Auroral_Index_2_H', 'Auroral_Index_1_2_H',
+                'Auroral_Index_2_H', 'Horizontal Auroral index 2 = f(Auroral index 1(1) & 1(2))',
+                '[nT]','[nT]')
+plotter.plot_2D_scatter(auroral_index, 'Auroral_Index_1_1_Z', 'Auroral_Index_2_Z', 'Auroral_Index_1_2_Z',
+                'Auroral_Index_2_Z', 'Vertical Auroral index 2 = f(Auroral index 1(1) & 1(2))',
+                '[nT]','[nT]', location = 'lower left')
 
 plotter.plot_2D(auroral_index, 'hour', 'Auroral_Index_1_1_H', 'hour', 'Auroral_Index_1_2_H',
                 'Horizontal Auroral Index 1(1) & 1(2)', 'Time in hours','[nT]')

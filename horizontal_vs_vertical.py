@@ -84,8 +84,8 @@ auroral_index['Auroral_Index_1_2_H'] = aur.auroral_index1_2(magdata, 'KIR_H')
 auroral_index['Auroral_Index_1_2_Z'] = aur.auroral_index1_2(magdata, 'KIR_Z')
 
                 ###              Auroral Index 2              ####
-auroral_index['Auroral_Index_2_H'] = aur.auroral_index2(magdata, 18000, 36000, 'KIR_H')
-auroral_index['Auroral_Index_2_Z'] = aur.auroral_index2(magdata, 18000, 43200, 'KIR_Z')
+auroral_index['Auroral_Index_2_H'] = aur.auroral_index2(magdata, 'KIR_H', 2017)
+auroral_index['Auroral_Index_2_Z'] = aur.auroral_index2(magdata, 'KIR_Z', 2017)
 
                 ###              Auroral Index 1.2: Z/H              ####
 auroral_index['Auroral_Index_1_2_Z/H'] = auroral_index['Auroral_Index_1_2_Z']/auroral_index['Auroral_Index_1_2_H']
