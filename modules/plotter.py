@@ -10,9 +10,7 @@ import matplotlib.pyplot as plt
 import modules.global_graph as gb
 import numpy as np
 from matplotlib.ticker import AutoMinorLocator
-from scipy import stats
-from mpl_toolkits.mplot3d import Axes3D
-
+# from scipy import stats
 
 plot_color = [
         '#000000',   # 0: black
@@ -80,11 +78,13 @@ def plot_2D(magdata, horizontal1, vertical1, horizontal2, vertical2, title,
 
 def plot_2D_scatter(magdata, horizontal1, vertical1, horizontal2, vertical2, title,
             xlab, ylab, location='best'):
-    fig = plt.figure(dpi=200)
+    fig = plt.figure(dpi=300)
     ax = fig.add_subplot(1,1,1)
     x_axis = magdata[horizontal1]
+    # x_axis = np.log10(abs(magdata[horizontal1]))
     y_marker = np.sign(magdata[vertical1])*np.log10(abs(magdata[vertical1]))
-    x_axis2 = magdata[horizontal2]
+    x_axis2 = np.sign(magdata[horizontal1])*magdata[horizontal2]
+    # x_axis2 = np.log10(abs(magdata[horizontal2]))
     y_marker2 = np.sign(magdata[vertical2])*np.log10(abs(magdata[vertical2]))
     ax.scatter(x_axis, y_marker, s=.5, facecolors=plot_color[gb.color%12],
                edgecolors=plot_color[gb.color%12], label = 'dB/dt_1min')
@@ -99,8 +99,7 @@ def plot_2D_scatter(magdata, horizontal1, vertical1, horizontal2, vertical2, tit
     plt.legend(by_label.values(), by_label.keys())
     plt.xlabel(xlab, fontsize=12)
     plt.ylabel(ylab, fontsize=12)
-    plt.show()
-    return (distribution(x_axis, y_marker), distribution(x_axis2, y_marker2))
+    # return (distribution(x_axis, y_marker), distribution(x_axis2, y_marker2))
 
 
 def plot_3D(magdata, horizontal1, vertical1, horizontal2, vertical2, horizontal3,
@@ -140,8 +139,8 @@ def marker_plot(magdata, horizontal, vertical):
              markeredgecolor = plot_color[gb.color%12])
 
 
-def distribution(x, y):
-    binx = np.arange(min(x),max(x), 0.1)
-    biny = np.arange(min(y),max(y), 0.5)
-    ret = stats.binned_statistic_2d(x, y, None, 'count', bins=[binx, biny])
-    return ret.statistic
+# def distribution(x, y):
+#     binx = np.arange(min(x),max(x), 0.1)
+#     biny = np.arange(min(y),max(y), 0.5)
+#     ret = stats.binned_statistic_2d(x, y, None, 'count', bins=[binx, biny])
+#     return ret.statistic

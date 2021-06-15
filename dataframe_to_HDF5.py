@@ -30,7 +30,7 @@ station_dec = 'kir20'
 extension_sec = '09dsec.sec'
 extension_hdf = '09sec.hdf5'
 
-for i in range(11,21):
+for i in range(11,12):
     print('----     Reading data from september 20{}    ----'.format(i))
     filePath = folder + station_dec + str(i) + extension_sec
     filename = folder + station_dec + str(i) + extension_hdf # Corresponds to the path + filename
@@ -55,7 +55,7 @@ for i in range(11,21):
         if magdata[columnh].iloc[j] > 30000:
             magdata[columnh].iloc[j] = np.nan
             anomalies += 1
-    magdata.to_hdf(filename, 'data', mode='w') # 'data' is the key used to access the data in the .hdf5
+    magdata.to_hdf(filename, 'data', mode='w') # None means that there is no the key used to access the data in the .hdf5
     print('----   {} anomalies detected and corrected   ----'.format(anomalies))
     executionTime = (time.time() - startTime)
     print('----          Elapsed time: {0:.2f}s         ----'.format(executionTime))

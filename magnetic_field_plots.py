@@ -30,7 +30,6 @@ filename = folder + station_dec + year + extension_hdf # Corresponds to the path
 for i in range(0,30,1):
     print('Processing data for the {} of september 20{}'.format(i+1, year))
     magdata = pd.read_hdf(filename, start=i*86400, stop=(i+1)*86400)
-    magdata[columnh] = np.sqrt(magdata[columnx]*magdata[columnx] + magdata[columny]*magdata[columny])
     magdata['hour'] = np.linspace(0,24,86400)
     plotter.plot_1D(magdata, columnx, 'X component of the magnetic field', 'Time in hours', '[nT]')
     plotter.plot_1D(magdata, columny, 'Y component of the magnetic field', 'Time in hours', '[nT]')
