@@ -35,7 +35,7 @@ for year in range(2011,2021): # Year: 11 to 21
     for i in range(0,30): # Day in september: 0 to 30
         gb.initialize() # The color is initialized at the begining of each day so that we have the same colors everyday
         filename = folder + station_dec +  str(year) + extension_hdf
-        if i < 10: day = '0' + str(i+1)
+        if i < 9: day = '0' + str(i+1)
         else : day = str(i+1)
         date = str(year) + '.09.' + day
         print('Processing data for the {}'.format(date))
