@@ -22,7 +22,7 @@ columnh = station + '_H'
 # colnames = [columnx, columny, columnz]
 folder = 'maggraphs/'
 station_dec = 'kir20'
-year = '19'
+year = '17'
 # extension_sec = '09dsec.sec'
 extension_hdf = '09sec.hdf5'
 filename = folder + station_dec + year + extension_hdf # Corresponds to the path + filename
@@ -33,8 +33,8 @@ for i in range(0,30,1):
     magdata['hour'] = np.linspace(0,24,86400)
     plotter.plot_1D(magdata, columnx, 'X component of the magnetic field', 'Time in hours', '[nT]')
     plotter.plot_1D(magdata, columny, 'Y component of the magnetic field', 'Time in hours', '[nT]')
-    plotter.plot_1D(magdata, columnz, 'Z component of the magnetic field', 'Time in hours', '[nT]')
-    plotter.plot_1D(magdata, columnh, 'H component of the magnetic field', 'Time in hours', '[nT]')
+    # plotter.plot_1D(magdata, columnz, 'Z component of the magnetic field', 'Time in hours', '[nT]')
+    # plotter.plot_1D(magdata, columnh, 'H component of the magnetic field', 'Time in hours', '[nT]')
 
             ###              Execution time              ####
 executionTime = (time.time() - startTime)

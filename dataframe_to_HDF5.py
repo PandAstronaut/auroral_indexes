@@ -12,6 +12,7 @@ data files used for sec, min, hour and every station.
 """
 import pandas as pd     # pandas is for reading file
 import numpy as np      # instead of math to convert X,Y <--> H,D
+import modules.auroral_index_functions as aur
 import time
 startTime = time.time()
 
@@ -26,14 +27,16 @@ columnz = station + '_Z'
 columnh = station + '_H'
 colnames = [columnx, columny, columnz]
 folder = 'maggraphs/'
-station_dec = 'kir20'
+subfolder ='sec files/'
+station = 'kir'
 extension_sec = '09dsec.sec'
 extension_hdf = '09sec.hdf5'
+auroral_index = pd.DataFrame()
 
-for i in range(11,12):
-    print('----     Reading data from september 20{}    ----'.format(i))
-    filePath = folder + station_dec + str(i) + extension_sec
-    filename = folder + station_dec + str(i) + extension_hdf # Corresponds to the path + filename
+for year in range(2017,2018): # Year: 11 to 21
+    print('----     Reading data from september {}    ----'.format(year))
+    filePath = folder + subfolder + station + str(year) + extension_sec
+    filename = folder + station + str(year) + extension_hdf # Corresponds to the path + filename
     magdata = pd.read_fwf(filePath, colspecs=colnumber, names=colnames)
     print('----           Removing errors               ----')
     magdata[columnx].replace(to_replace= 99999.0, value=np.nan, inplace=True)
@@ -55,11 +58,41 @@ for i in range(11,12):
         if magdata[columnh].iloc[j] > 30000:
             magdata[columnh].iloc[j] = np.nan
             anomalies += 1
-    magdata.to_hdf(filename, 'data', mode='w') # None means that there is no the key used to access the data in the .hdf5
     print('----   {} anomalies detected and corrected   ----'.format(anomalies))
+    magdata.to_hdf(filename, 'data', mode='w')
+
+    ###              Auroral Index 1              ####
+    auroral_index['Auroral_Index_1_1_Z'] = aur.auroral_index1_1(magdata, 'KIR_Z')
+    auroral_index['Auroral_Index_1_1_H'] = aur.auroral_index1_1(magdata, 'KIR_H')
+    auroral_index['Auroral_Index_1_2_X'] = aur.auroral_index1_2(magdata, 'KIR_X')
+    auroral_index['Auroral_Index_1_2_Y'] = aur.auroral_index1_2(magdata, 'KIR_Y')
+    auroral_index['Auroral_Index_1_2_Z'] = aur.auroral_index1_2(magdata, 'KIR_Z')
+    auroral_index['Auroral_Index_1_2_H'] = aur.auroral_index1_2(magdata, 'KIR_H')
+
+                    ###              Auroral Index 2              ###
+    auroral_index['Auroral_Index_2_X'] = aur.auroral_index2(magdata, 'KIR_X', year)
+    auroral_index['Auroral_Index_2_Y'] = aur.auroral_index2(magdata, 'KIR_Y', year)
+    auroral_index['Auroral_Index_2_Z'] = aur.auroral_index2(magdata, 'KIR_Z', year)
+    auroral_index['Auroral_Index_2_H'] = aur.auroral_index2(magdata, 'KIR_H', year)
+
+                    ###              Auroral Index 1.2: Z/X Z/Y              ####
+    auroral_index['Auroral_Index_1_2_Z/X'] = auroral_index['Auroral_Index_1_2_Z']/auroral_index['Auroral_Index_1_2_X']
+    auroral_index['Auroral_Index_1_2_Z/Y'] = auroral_index['Auroral_Index_1_2_Z']/auroral_index['Auroral_Index_1_2_Y']
+
+    ###              (Auroral Index 2: Z/X and Z/Y)             ####
+    auroral_index['DC_ratio_X'] = np.sign(auroral_index['Auroral_Index_2_Z']/auroral_index['Auroral_Index_2_X'])*np.log10(abs(auroral_index['Auroral_Index_2_Z']/auroral_index['Auroral_Index_2_X']))
+    auroral_index['DC_ratio_Y'] = np.sign(auroral_index['Auroral_Index_2_Z']/auroral_index['Auroral_Index_2_Y'])*np.log10(abs(auroral_index['Auroral_Index_2_Z']/auroral_index['Auroral_Index_2_Y']))
+
+    ###              (dB/dt)/(<dB_1sec>_1min)             ####
+    auroral_index['AC_ratio'] = abs(auroral_index['Auroral_Index_1_1_H'])/auroral_index['Auroral_Index_1_2_H']
+
+    auroral_index.to_hdf(filename, 'index', mode='a')
+
     executionTime = (time.time() - startTime)
-    print('----          Elapsed time: {0:.2f}s         ----'.format(executionTime))
+    if year != 2020:    print('----    Estimated emaining time: {0:.0f}s   ----'.format((executionTime/(year-10))*(20-year)))
 
                 ###              Execution time              ####
 executionTime = (time.time() - startTime)
 print("Execution time: {0:.2f}s".format(executionTime))
+
+
