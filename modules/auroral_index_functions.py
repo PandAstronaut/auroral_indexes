@@ -3,27 +3,67 @@
 Created on Fri Jun  4 09:15:24 2021
 @author: Bastien Longeon
 """
-offsetZ = {2011:51657,
-           2012:51695,
-           2013:51725,
-           2014:51750,
-           2015:51800,
-           2016:51847,
-           2017:51918,
-           2018:51950,
-           2019:52000,
-           2020:52055}
+offsetZ_kir = {2011:51657,
+               2012:51695,
+               2013:51725,
+               2014:51750,
+               2015:51800,
+               2016:51847,
+               2017:51918,
+               2018:51950,
+               2019:52000,
+               2020:52055}
 
-offsetH = {2011:10700,
-           2012:10680,
-           2013:10680,
-           2014:10650,
-           2015:10640,
-           2016:10640,
-           2017:10600,
-           2018:10588,
-           2019:10584,
-           2020:10560}
+offsetH_kir = {2011:10700,
+               2012:10680,
+               2013:10680,
+               2014:10650,
+               2015:10640,
+               2016:10640,
+               2017:10600,
+               2018:10588,
+               2019:10584,
+               2020:10560}
+
+offsetX_cbb = {2011:4420,
+               2012:4500,
+               2013:4580,
+               2014:4660,
+               2016:4795,
+               2017:4860,
+               2018:4950,
+               2019:5000,
+               2020:5090}
+
+offsetY_cbb = {2011:540,
+               2012:510,
+               2013:500,
+               2014:490,
+               2016:475,
+               2017:480,
+               2018:570,
+               2019:580,
+               2020:590}
+
+offsetZ_cbb = {2011:58700,
+               2012:58635,
+               2013:58565,
+               2014:58480,
+               2016:58330,
+               2017:58275,
+               2018:58210,
+               2019:58140,
+               2020:58080}
+
+offsetH_cbb = {2011:4450,
+               2012:4520,
+               2013:4615,
+               2014:4680,
+               2016:4820,
+               2017:4875,
+               2018:4980,
+               2019:5060,
+               2020:5140}
 
 def auroral_index1_1 (magdata, data):
     """
@@ -48,7 +88,7 @@ def auroral_index1_1 (magdata, data):
     for k in range(days):
         for h in range(0,24): # For each hour in a day
             for m in range(0,60): # For each minute every hour
-                mean.append((magdata[data].iloc[60*m + 3600*h + days*86400] - magdata[data].iloc[59 + 60*m +3600*h + days*86400])/60)
+                mean.append((magdata[data].iloc[60*m + 3600*h + k*86400] - magdata[data].iloc[59 + 60*m +3600*h + k*86400])/60)
     return mean # We actually return dBAC(1) = [B(t-60sec) - B(t)]/60
 
 def auroral_index1_2 (magdata, data):
@@ -69,7 +109,7 @@ def auroral_index1_2 (magdata, data):
             for m in range(0,60): # For each minute every hour
                 x = 0
                 for i in range(0,59): # Calculate the mean value for a minute
-                    x += abs(magdata[data].iloc[i + 60*m + 3600*h + days*86400] - magdata[data].iloc[i+1 + 60*m + 3600*h + days*86400])
+                    x += abs(magdata[data].iloc[i + 60*m + 3600*h + k*86400] - magdata[data].iloc[i+1 + 60*m + 3600*h + k*86400])
                 mean.append(x/59) # Add the value to a list
     return mean # We actually return dBAC(2) = <dB_1s(t-60s):dB_1s(t)>
 
@@ -93,12 +133,22 @@ def auroral_index2 (magdata, data, year):
     iloc is used to access a specific index in a DataFrame
     range(0,60) is actually 0 to 59 so 60 iterations
     """
-    if data[-1].lower() == 'x' or data[-1].lower() == 'h':
-        b0 = offsetH[year]
-    if data[-1].lower() == 'y':
-        b0 = 0
-    if data[-1].lower() == 'z':
-        b0 = offsetZ[year]
+    if data[0:3] == 'KIR':
+        if data[-1].lower() == 'x' or data[-1].lower() == 'h':
+            b0 = offsetH_kir[year]
+        if data[-1].lower() == 'y':
+            b0 = 0
+        if data[-1].lower() == 'z':
+            b0 = offsetZ_kir[year]
+    if data[0:3] == 'CBB':
+        if data[-1].lower() == 'x':
+            b0 = offsetX_cbb[year]
+        if data[-1].lower() == 'y':
+            b0 = offsetY_cbb[year]
+        if data[-1].lower() == 'z':
+            b0 = offsetZ_kir[year]
+        if data[-1].lower() == 'h':
+             b0 = offsetH_cbb[year]
 
     mean = list()
     days = int(len(magdata)/86400)
@@ -107,7 +157,7 @@ def auroral_index2 (magdata, data, year):
             for m in range(0,60): # For each minute every hour
                 x = 0
                 for i in range(0,60): # Calculate the mean value for a minute
-                    x += magdata[data].iloc[i + 60*m + 3600*h + days*86400]
+                    x += magdata[data].iloc[i + 60*m + 3600*h + k*86400]
                 mean.append(x/60) # Add the value to a list
     mean = [n - b0 for n in mean] # Doing the same operation for each cell in the list
     return mean # We actually return BDC = <B>_1min – B0

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Jun 18 09:40:27 2021
+Created on Wed Jun  9 11:05:11 2021
 @author: Bastien Longeon
 
 For everyday in september from 2011 to 2020, this code plots:
@@ -13,36 +13,58 @@ For everyday in september from 2011 to 2020, this code plots:
             In function of time
 
     · dBDC in function of dBAC 1 & 2 for the vertical and horizontal component
-
-It takes a HDF5 file in input. An HDF5 file can be created with the DataFrame
-to HDF5 code found in the same repository.
 """
 import pandas as pd     # pandas is for reading file
-import numpy as np
+import numpy as np      # instead of math to convert X,Y <--> H,D
+import modules.plotter as plotter
+import modules.auroral_index_functions as aur
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
 from matplotlib.ticker import AutoMinorLocator
-import modules.plotter as plotter
-import modules.global_graph as gb # Imported or it will not be detected by the module for some reasons
+import modules.global_graph as gb
 import time
 startTime = time.time()
-
+###              Define the file to read              ####
 folder = "maggraphs/"
 station = 'kir'
 extension_hdf = '09sec.hdf5'
+auroral_index = pd.DataFrame()
+auroral_index['hour'] = np.linspace(0, 24, 1440)
 
-iterations = 0
-for year in range(2011,2021): # Year: 11 to 21
-    for i in range(0,30): # Day in september: 0 to 30
+for year in range(2017,2018): # Year: 11 to 21
+    for i in range(7,8): # Day in september: 0 to 30
         gb.initialize()
         filename = folder + station +  str(year) + extension_hdf
         if i < 9: day = '0' + str(i+1)
         else : day = str(i+1)
         date = str(year) + '.09.' + day
         print('Processing data for the {}'.format(date))
+        magdata = pd.read_hdf(filename, start=i*86400, stop=(i+1)*86400)
 
-        magdata = pd.read_hdf(filename, 'data', start=i*86400, stop=(i+1)*86400)
-        auroral_index = pd.read_hdf(filename, 'index', start=i*1440, stop=(i+1)*1440)
+                ###              Auroral Index 1              ####
+        auroral_index['Auroral_Index_1_1_H'] = aur.auroral_index1_1(magdata, 'KIR_H')
+        auroral_index['Auroral_Index_1_2_H'] = aur.auroral_index1_2(magdata, 'KIR_H')
+        auroral_index['Auroral_Index_1_1_Z'] = aur.auroral_index1_1(magdata, 'KIR_Z')
+        auroral_index['Auroral_Index_1_2_X'] = aur.auroral_index1_2(magdata, 'KIR_X')
+        auroral_index['Auroral_Index_1_2_Y'] = aur.auroral_index1_2(magdata, 'KIR_Y')
+        auroral_index['Auroral_Index_1_2_Z'] = aur.auroral_index1_2(magdata, 'KIR_Z')
+
+                        ###              Auroral Index 2              ####
+        auroral_index['Auroral_Index_2_H'] = aur.auroral_index2(magdata, 'KIR_H', year)
+        auroral_index['Auroral_Index_2_Z'] = aur.auroral_index2(magdata, 'KIR_Z', year)
+        auroral_index['Auroral_Index_2_X'] = aur.auroral_index2(magdata, 'KIR_X', year)
+        auroral_index['Auroral_Index_2_Y'] = aur.auroral_index2(magdata, 'KIR_Y', year)
+
+                        ###              Auroral Index 1.2: Z/X Z/Y              ####
+        auroral_index['Auroral_Index_1_2_Z/X'] = auroral_index['Auroral_Index_1_2_Z']/auroral_index['Auroral_Index_1_2_X']
+        auroral_index['Auroral_Index_1_2_Z/Y'] = auroral_index['Auroral_Index_1_2_Z']/auroral_index['Auroral_Index_1_2_Y']
+
+        ###              (Auroral Index 2: Z/X and Z/Y)             ####
+        auroral_index['DC_ratio_X'] = np.sign(auroral_index['Auroral_Index_2_Z']/auroral_index['Auroral_Index_2_X'])*np.log10(abs(auroral_index['Auroral_Index_2_Z']/auroral_index['Auroral_Index_2_X']))
+        auroral_index['DC_ratio_Y'] = np.sign(auroral_index['Auroral_Index_2_Z']/auroral_index['Auroral_Index_2_Y'])*np.log10(abs(auroral_index['Auroral_Index_2_Z']/auroral_index['Auroral_Index_2_Y']))
+
+        ###              (dB/dt)/(<dB_1sec>_1min)             ####
+        auroral_index['AC_ratio'] = abs(auroral_index['Auroral_Index_1_1_H'])/auroral_index['Auroral_Index_1_2_H']
 
         for k in range(0,1440):
             if abs(auroral_index['Auroral_Index_2_H'].iloc[k]) < 35 and abs(auroral_index['Auroral_Index_1_2_H'].iloc[k]) < 1:
@@ -52,20 +74,21 @@ for year in range(2011,2021): # Year: 11 to 21
                 auroral_index['DC_ratio_Y'].iloc[k] = np.nan
             if auroral_index['Auroral_Index_1_2_H'].iloc[k] < 0.5:
                 auroral_index['AC_ratio'].iloc[k] = np.nan
-        auroral_index['hour'] = np.linspace(0, 24, 1440)
 
-        ###              Plots              ####
+                        ###              Plots              ####
         plt.figure(dpi=300, figsize=(15, 8))
         gs = gridspec.GridSpec(5, 1)
         # Subplot 1
         a1 = plt.subplot(gs[0])
         (line1, ) = a1.plot(auroral_index['hour'], auroral_index['Auroral_Index_1_2_Z/X'], color='orange')
-        line2 = a1.scatter(auroral_index['hour'], auroral_index['Auroral_Index_1_2_Z/Y'], s=.5, facecolors='blue', edgecolors='blue')
+        line2 = a1.scatter(auroral_index['hour'], auroral_index['Auroral_Index_1_2_Z/Y'], s=.5, facecolors='blue',
+               edgecolors='blue')
         plt.title('Auroral indexes quotients during Auroral Activity\nfor abs(dB_H) > 35 nT and <dB/dt>_1min > 1 nT/s\n' + date, fontsize=15)
         # Subplot 2
         a2 = plt.subplot(gs[1], sharex = a1)
         (line3, ) = a2.plot(auroral_index['hour'], auroral_index['DC_ratio_X'], color='orange')
-        line4 = a2.scatter(auroral_index['hour'], auroral_index['DC_ratio_Y'], s=.5, facecolors='blue', edgecolors='blue')
+        line4 = a2.scatter(auroral_index['hour'], auroral_index['DC_ratio_Y'], s=.5, facecolors='blue',
+               edgecolors='blue')
         # Subplot 3
         a3 = plt.subplot(gs[2], sharex = a1)
         (line5, line6) = a3.plot(auroral_index['hour'], auroral_index['Auroral_Index_2_H'],
@@ -101,8 +124,8 @@ for year in range(2011,2021): # Year: 11 to 21
         a5.xaxis.set_minor_locator(AutoMinorLocator(5))
         a5.tick_params('x', which='minor', length=6)
         a5.tick_params('x', which='major', length=8)
-        plt.subplots_adjust(hspace=0.14) # Vertical gap between subplots
-        plt.savefig('D:/Documents/GitHub/auroral_indexes/Plots/Kiruna/Pannels/' + str(year) + '/Pannels - ' + date + '.png', dpi=300, bbox_inches='tight')
+        plt.subplots_adjust(hspace=0.1) # Vertical gap between subplots
+        plt.savefig('D:/Documents/GitHub/auroral_indexes/Plots/4_pannels/' + str(year) + '/4 pannels' + date + '.png', dpi=300, bbox_inches='tight')
         plt.show()
 
         for l in range(0,1440): # A criterion is applied here and not before because it would compromise the first plot
@@ -120,17 +143,14 @@ for year in range(2011,2021): # Year: 11 to 21
         plotter.plot_2D_scatter(auroral_index, 'Auroral_Index_1_1_H', 'Auroral_Index_2_H', 'Auroral_Index_1_2_H',
             'Auroral_Index_2_H', 'Horizontal Auroral index 2 = f(Auroral index 1(1) & 1(2))\nfor abs(dB_H) > 35 nT and <dB/dt>_1min > 1 nT/s\n'+ date,
             '[nT/s]','log(dB) [nT]')
-        plt.savefig('D:/Documents/GitHub/auroral_indexes/Plots/Kiruna/Distribution/' + str(year) + '/Horizontal distribution - ' + date + '.png', dpi=300, bbox_inches='tight')
+        plt.savefig('D:/Documents/GitHub/auroral_indexes/Plots/Distribution/' + str(year) + '/Horizontal distribution - ' + date + '.png', dpi=300, bbox_inches='tight')
         plt.show()
         plotter.plot_2D_scatter(auroral_index, 'Auroral_Index_1_1_Z', 'Auroral_Index_2_Z', 'Auroral_Index_1_2_Z',
                     'Auroral_Index_2_Z', 'Vertical Auroral index 2 = f(Auroral index 1(1) & 1(2))\nfor abs(dB_H) > 35 nT and <dB/dt>_1min > 1 nT/s\n'+ date,
                     '[nT/s]','log(dB) [nT]')
-        plt.savefig('D:/Documents/GitHub/auroral_indexes/Plots/Kiruna/Distribution/' + str(year) + '/Vertical distribution - ' + date + '.png', dpi=300, bbox_inches='tight')
+        plt.savefig('D:/Documents/GitHub/auroral_indexes/Plots/Distribution/' + str(year) + '/Vertical distribution - ' + date + '.png', dpi=300, bbox_inches='tight')
         plt.show()
-    iterations += 1
-    executionTime = (time.time() - startTime)
-    if year != 2020:    print('----    Estimated remaining time: {0:.0f}s   ----'.format((executionTime/iterations)*(2020-year)))
 
-###              Execution time              ####
+            ###              Execution time              ####
 executionTime = (time.time() - startTime)
 print("Execution time: {0:.2f}s".format(executionTime))
