@@ -3,6 +3,17 @@
 Created on Fri Jun  4 09:15:24 2021
 @author: Bastien Longeon
 """
+offsetY_kir = {2011:-260,
+               2012:-220,
+               2013:-180,
+               2014:-140,
+               2015:-100,
+               2016:-60,
+               2017:0,
+               2018:40,
+               2019:80,
+               2020:100}
+
 offsetZ_kir = {2011:51657,
                2012:51695,
                2013:51725,
@@ -64,6 +75,38 @@ offsetH_cbb = {2011:4450,
                2018:4980,
                2019:5060,
                2020:5140}
+
+offsetX_abk = {2014:11350,
+               2015:11340,
+               2016:11340,
+               2017:11350,
+               2018:11280,
+               2019:11270,
+               2020:11250}
+
+offsetY_abk = {2014:1600,
+               2015:1650,
+               2016:1690,
+               2017:1725,
+               2018:1800,
+               2019:1850,
+               2020:1890}
+
+offsetZ_abk = {2014:51880,
+               2015:51935,
+               2016:51970,
+               2017:52025,
+               2018:52075,
+               2019:52110,
+               2020:52200}
+
+offsetH_abk = {2014:11470,
+               2015:11450,
+               2016:11450,
+               2017:11450,
+               2018:11430,
+               2019:11420,
+               2020:11400}
 
 def auroral_index1_1 (magdata, data):
     """
@@ -137,7 +180,7 @@ def auroral_index2 (magdata, data, year):
         if data[-1].lower() == 'x' or data[-1].lower() == 'h':
             b0 = offsetH_kir[year]
         if data[-1].lower() == 'y':
-            b0 = 0
+            b0 = offsetY_kir[year]
         if data[-1].lower() == 'z':
             b0 = offsetZ_kir[year]
     if data[0:3] == 'CBB':
@@ -146,9 +189,18 @@ def auroral_index2 (magdata, data, year):
         if data[-1].lower() == 'y':
             b0 = offsetY_cbb[year]
         if data[-1].lower() == 'z':
-            b0 = offsetZ_kir[year]
+            b0 = offsetZ_cbb[year]
         if data[-1].lower() == 'h':
              b0 = offsetH_cbb[year]
+    if data[0:3] == 'ABK':
+        if data[-1].lower() == 'x':
+            b0 = offsetX_abk[year]
+        if data[-1].lower() == 'y':
+            b0 = offsetY_abk[year]
+        if data[-1].lower() == 'z':
+            b0 = offsetZ_abk[year]
+        if data[-1].lower() == 'h':
+             b0 = offsetH_abk[year]
 
     mean = list()
     days = int(len(magdata)/86400)

@@ -7,6 +7,7 @@ import pandas as pd     # pandas is for reading file
 import numpy as np      # instead of math to convert X,Y <--> H,D
 import modules.plotter as plotter
 import modules.global_graph as gb
+import os.path
 import time
 startTime = time.time()
 gb.initialize()
@@ -21,14 +22,16 @@ columnz = station + '_Z'
 columnh = station + '_H'
 colnames = [columnx, columny, columnz]
 folder = 'maggraphs/sec files/'
-station_dec = 'cbb20'
+station_dec = 'kir20'
 year = '2009'
-extension_sec = 'vsec.sec'
+extension_sec = 'psec.sec'
+extension_sec2 = 'qsec.sec'
 # extension_hdf = '09sec.hdf5'
 for i in range(0,30):
     if i < 9: day = '0' + str(i+1)
     else : day = str(i+1)
     filename = folder + station_dec + year + day + extension_sec # Corresponds to the path + filename
+    if os.path.exists(filename) == False : filename = folder + station_dec + year + day + extension_sec2
     with open(filename, 'r') as file: #Determination of the number of rows to skip before the datas
         comments_size = 0
         for row in file:
@@ -40,6 +43,7 @@ for i in range(0,30):
                 break
 
     # print('Processing data for the {} of september 20{}'.format(i+1, year))
+
     magdata = pd.read_fwf(filename, skiprows=comments_size, colspecs=colnumber, names=colnames)
     magdata[columnh] = np.sqrt(magdata[columnx]*magdata[columnx] + magdata[columny]*magdata[columny])
     magdata['hour'] = np.linspace(0,24,86400)
