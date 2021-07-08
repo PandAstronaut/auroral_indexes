@@ -229,7 +229,7 @@ def auroral_index1_2 (magdata, data):
     """
                             AURORAL INDEX 1_2:
                         dBAC(2) = <|dB/dt|>_1min
-                                = <dB_1sec>_1min
+                                = <|dB_1sec|>_1min
                                 = ave(dB_1s(t-60s):dB_1s(t))
                                 where dB_1s(t) = |dB(t-1s) - dB(t)|
 
