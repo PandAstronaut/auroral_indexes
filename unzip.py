@@ -15,6 +15,11 @@ import zipfile
 import time
 startTime = time.time()
 
+# =============================================================================
+# Unziping the folders contained in Téléchargements and sending the .gz in the
+# to_unzip folder.
+# =============================================================================
+
 # path = 'D:/Téléchargements/'
 # files = os.listdir(path)
 # iterations = 0
@@ -27,7 +32,7 @@ startTime = time.time()
 colnumber = [(31, 40),   # X [nT]
              (41, 50),   # Y [nT]
              (51, 60)]   # Z [nT]
-stations = ['brw']
+stations = ['sod']
 
 source_folder = 'to_unzip/'
 folder = 'maggraphs/'
@@ -38,15 +43,21 @@ extension_sec3 = 'qsec.sec.gz'
 extension_hdf = '09sec.hdf5'
 destination = 'D:/Documents/GitHub/auroral_indexes/maggraphs/sec files/'
 
+extension_min = 'vmin.min.gz'
+
+
+# =============================================================================
+# Unzipping the .gz contained in the to_unzip folder and directly turning them
+# into hdf5 data.
+# =============================================================================
+
 for station in stations:
     columnx = station.upper() + '_X'
     columny = station.upper() + '_Y'
     columnz = station.upper() + '_Z'
     columnh = station.upper() + '_H'
     colnames = [columnx, columny, columnz]
-    if station == 'brw': comments=21
-    for year in range(2018,2021): # Year: 2011 to 2021
-        if station == 'ups' and year > 2015 : comments=22
+    for year in range(2020,2021): # Year: 2011 to 2021
         magdata_month = pd.DataFrame() # These two DF will be the ones used to create the HDF5 file
         filename = folder + station + str(year) + extension_hdf # Corresponds to the path + filename
         print('Processing data from {} in {}'.format(year,station))
@@ -54,35 +65,18 @@ for station in stations:
             if i < 9: day = '0' + str(i+1)
             else : day = str(i+1)
             date = str(year) + '.09.' + day
-            filePath = source_folder + station + str(year) + '09' + day + extension_sec
-            if os.path.exists(filePath) == False : filePath = source_folder + station.lower() + str(year) + '09' +  day + extension_sec2
-            if os.path.exists(filePath) == False : filePath = source_folder + station.lower() + str(year) + '09' +  day + extension_sec3
-            # try:
-            #     with gzip.open(filePath) as file:
-            #         with open(destination + station + str(year) + '09' + day + '.sec', 'wb') as d_file:
-            #             while True:
-            #                 block = file.read(65536)
-            #                 if not block:
-            #                     break
-            #                 else:
-            #                     d_file.write(block)
-            #         file.close()
-                # It is way faster to read the file while it is still open in the with gzip.open loop
-                # This code is like this just because of missing days in BRW data
-            # except Exception as e:
-            #     print(str(e))
-            file = folder + subfolder + station +  str(year) + '09' + day + '.sec'
-            magdata = pd.read_fwf(file, skiprows=comments ,colspecs=colnumber, names=colnames)
-            magdata[columnx].replace(to_replace= 99999.0, value=np.nan, inplace=True)
-            magdata[columny].replace(to_replace= 99999.0, value=np.nan, inplace=True)
-            magdata[columnz].replace(to_replace= 99999.0, value=np.nan, inplace=True)
-            for j in range(0,86400):
-                if abs(magdata[columny].iloc[j]) > 5000:
-                    magdata[columny].iloc[j] = np.nan
-            magdata[columnh] = np.sqrt(magdata[columnx]*magdata[columnx] + magdata[columny]*magdata[columny])
-            magdata_month = magdata_month.append(magdata)
+            filePath = source_folder + station + str(year) + '09' + day + extension_min
+            # if os.path.exists(filePath) == False : filePath = source_folder + station.lower() + str(year) + '09' +  day + extension_sec2
+            # if os.path.exists(filePath) == False : filePath = source_folder + station.lower() + str(year) + '09' +  day + extension_sec3
+            with gzip.open(filePath) as file:
+                magdata = pd.read_fwf(file, skiprows=22 ,colspecs=colnumber, names=colnames)
+                file.close()
+                magdata[columnx].replace(to_replace= 99999.0, value=np.nan, inplace=True)
+                magdata[columny].replace(to_replace= 99999.0, value=np.nan, inplace=True)
+                magdata[columnz].replace(to_replace= 99999.0, value=np.nan, inplace=True)
+                magdata[columnh] = np.sqrt(magdata[columnx]*magdata[columnx] + magdata[columny]*magdata[columny])
+                magdata_month = magdata_month.append(magdata)
         magdata_month.to_hdf(filename, 'data', mode='w')
-
                 ###              Execution time              ####
 executionTime = (time.time() - startTime)
 print("Execution time: {0:.2f}s".format(executionTime))

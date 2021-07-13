@@ -12,13 +12,14 @@ startTime = time.time()
 gb.initialize()
 
 folder = "maggraphs/"
-station = 'ups'
+station = 'lyc'
 if station == 'kir': station_name = 'Kiruna'
 elif station == 'cbb': station_name = 'Cambridge Bay'
 elif station =='abk': station_name = 'Abisko'
 elif station =='blc': station_name = 'Baker Lake'
 elif station =='ups': station_name = 'Uppsala'
 elif station =='brw': station_name = 'Barrow'
+elif station =='lyc': station_name = 'Lycksele'
 year = 2020
 extension_hdf = '09sec.hdf5'
 
@@ -38,7 +39,7 @@ for i in range(0,6):
     plotter.plot_1D(magdata, columnx, 'X component of the magnetic field\n' + station_name + ' - ' + date, 'Time in hours', '[nT]')
     plotter.plot_1D(magdata, columny, 'Y component of the magnetic field\n' + station_name + ' - ' + date, 'Time in hours', '[nT]')
     plotter.plot_1D(magdata, columnz, 'Z component of the magnetic field\n'+ station_name + ' - ' + date, 'Time in hours', '[nT]')
-    # plotter.plot_1D(magdata, columnh, 'H component of the magnetic field\n'+ station_name + ' - ' + date, 'Time in hours', '[nT]')
+    plotter.plot_1D(magdata, columnh, 'H component of the magnetic field\n'+ station_name + ' - ' + date, 'Time in hours', '[nT]')
 
             ###              Execution time              ####
 executionTime = (time.time() - startTime)

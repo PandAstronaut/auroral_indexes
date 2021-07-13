@@ -12,7 +12,6 @@ import modules.global_graph as gb
 import numpy as np
 from matplotlib.ticker import AutoMinorLocator
 from matplotlib import gridspec
-# from scipy import stats
 
 plot_color = ['#000000',   # 0: black
               '#cc66cc',   # 1: red-purple
@@ -47,8 +46,9 @@ def plot_1D(magdata, column, title, xlab, ylab, location='best'):
             plt.tick_params('x', which='major', length=8)
     plt.xlabel(xlab, fontsize=12)
     plt.ylabel(ylab, fontsize=12)
-    # plt.show()   # This is to display the plot
-    # gb.color += 1
+    plt.show()   # This is to display the plot
+    gb.color += 1
+    plt.close()
 
 
 def plot_2D(magdata, horizontal1, vertical1, horizontal2, vertical2, title,
@@ -97,7 +97,6 @@ def plot_2D_scatter(magdata, horizontal1, vertical1, horizontal2, vertical2, tit
     plt.legend(by_label.values(), by_label.keys())
     plt.xlabel(xlab, fontsize=12)
     plt.ylabel(ylab, fontsize=12)
-    # return (distribution(x_axis, y_marker), distribution(x_axis2, y_marker2))
 
 def plot_3D(magdata, horizontal1, vertical1, horizontal2, vertical2, horizontal3,
             vertical3, title, xlab, ylab, location='best'):
@@ -158,6 +157,9 @@ def plot_3D_scatter(magdata, station_name, date, horizontal1, vertical1, horizon
     plt.grid(b=True)
     plt.xlim([-0.2, 0.6])
     plt.ylim([-0.2, 0.6])
+    if station_name == 'Lycksele':
+        plt.xlim([-3, 0])
+        plt.ylim([-3, 0])
     handles, labels = plt.gca().get_legend_handles_labels()
     by_label = dict(zip(labels, handles))
     plt.legend(by_label.values(), by_label.keys())
@@ -172,6 +174,9 @@ def distribution(station_name, date, x, y, x2, y2, x3, y3):
     try:
         binx = np.arange(-0.2, 0.61, 0.05)
         biny = np.arange(-0.2, 0.61, 0.05)
+        if station_name == 'Lycksele':
+            binx = np.arange(-3, 0.1, 0.05)
+            biny = np.arange(-3, 0.1, 0.05)
         fig = plt.figure(dpi=300)
         gs = gridspec.GridSpec(3, 1)
         ttl = plt.suptitle(station_name + ' - ' + date, fontsize=10)
@@ -181,25 +186,31 @@ def distribution(station_name, date, x, y, x2, y2, x3, y3):
         ax1 = fig.add_subplot(gs[0], aspect='equal')
         X, Y = np.meshgrid(binx, biny)
         f1 = ax1.pcolormesh(X, Y, H, norm=colors.LogNorm(vmin=1, vmax=H.max()))
-        plt.xticks(np.arange(-0.2, 0.61, 0.2))
+        # plt.xticks(np.arange(-0.2, 0.61, 0.2))
+        if station_name == 'Lycksele':
+            plt.xticks(np.arange(-3, 0.01, 1))
         H2, binx, biny = np.histogram2d(x2, y2, bins=(binx, biny))
         H2 = H2.T
         ax2 = fig.add_subplot(gs[1], aspect='equal')
         X2, Y2 = np.meshgrid(binx, biny)
         f2 = ax2.pcolormesh(X2, Y2, H2, norm=colors.LogNorm(vmin=1, vmax=H.max()))
-        plt.xticks(np.arange(-0.2, 0.61, 0.2))
+        # plt.xticks(np.arange(-0.2, 0.61, 0.2))
+        if station_name == 'Lycksele':
+            plt.xticks(np.arange(-3, 0.01, 1))
         H3, binx, biny = np.histogram2d(x3, y3, bins=(binx, biny))
         H3 = H3.T
         ax3 = fig.add_subplot(gs[2], aspect='equal')
         X3, Y3 = np.meshgrid(binx, biny)
         f3 = ax3.pcolormesh(X3, Y3, H3, norm=colors.LogNorm(vmin=1, vmax=H.max()))
-        plt.xticks(np.arange(-0.2, 0.61, 0.2))
+        # plt.xticks(np.arange(-0.2, 0.61, 0.2))
+        if station_name == 'Lycksele':
+            plt.xticks(np.arange(-3, 0.01, 1))
         ax1.set_title(label='X', fontsize=7)
         ax2.set_title(label='Y', fontsize=7)
         ax3.set_title(label='Z', fontsize=7)
-        ax1.tick_params(labelsize=6)
-        ax2.tick_params(labelsize=6)
-        ax3.tick_params(labelsize=6)
+        ax1.tick_params(labelsize=5)
+        ax2.tick_params(labelsize=5)
+        ax3.tick_params(labelsize=5)
         cb = fig.colorbar(f1, ax = ax1)
         # cb.locator = ticker.MaxNLocator(nbins=6)
         cb.ax.tick_params(labelsize=8)
@@ -215,5 +226,3 @@ def distribution(station_name, date, x, y, x2, y2, x3, y3):
         plt.savefig('D:/Desktop/Stage/Plots/New distribution plots/' + station_name + '/' + station_name +  ' - points distribution - ' + date + '.png', dpi=300, bbox_inches='tight')
         plt.show()
     except: plt.close('all')
-#     ret = stats.binned_statistic_2d(x, y, None, 'count', bins=[binx, biny])
-#     return ret.statistic

@@ -318,6 +318,15 @@ def auroral_index2 (magdata, data, year):
             b0 = offsetZ_ups[year]
         if data[-1].lower() == 'h':
              b0 = 15196
+    if data[0:3] == 'LYC':
+        if data[-1].lower() == 'x':
+            b0 = 12950
+        if data[-1].lower() == 'y':
+            b0 = 1820
+        if data[-1].lower() == 'z':
+            b0 = 50850
+        if data[-1].lower() == 'h':
+             b0 = 13070
 
     mean = list()
     days = int(len(magdata)/86400)
