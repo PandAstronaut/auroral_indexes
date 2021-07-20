@@ -12,7 +12,7 @@ startTime = time.time()
 gb.initialize()
 
 folder = "maggraphs/"
-station = 'lyc'
+station = 'hrn'
 if station == 'kir': station_name = 'Kiruna'
 elif station == 'cbb': station_name = 'Cambridge Bay'
 elif station =='abk': station_name = 'Abisko'
@@ -20,6 +20,8 @@ elif station =='blc': station_name = 'Baker Lake'
 elif station =='ups': station_name = 'Uppsala'
 elif station =='brw': station_name = 'Barrow'
 elif station =='lyc': station_name = 'Lycksele'
+elif station =='nur': station_name = 'Nurmijarvi'
+elif station =='hrn': station_name = 'Hornsund'
 year = 2020
 extension_hdf = '09sec.hdf5'
 

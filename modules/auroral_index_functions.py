@@ -199,6 +199,37 @@ offsetZ_ups = {2011:48930,
                2019:49275,
                2020:49330}
 
+def auroral_index1_min (magdata, data):
+    mean = list()
+    days = int(len(magdata)/1440)
+    for k in range(days):
+        for h in range(0,24): # For each hour in a day
+            for m in range(0,60): # For each minute every hour
+                mean.append((magdata[data].iloc[m + 60*h + k*1440] - magdata[data].iloc[m+1 + 60*h + k*1440])/60)
+    return mean
+
+def auroral_index1_2 (magdata, data):
+    """
+                            AURORAL INDEX 1_2:
+                        dBAC(2) = <|dB/dt|>_1min
+                                = <|dB_1sec|>_1min
+                                = ave(dB_1s(t-60s):dB_1s(t))
+                                where dB_1s(t) = |dB(t-1s) - dB(t)|
+
+    This functions returns the first version of auroral index 1 for a specific day.
+    """
+    mean = list()
+    x = 0
+    days = int(len(magdata)/86400)
+    for k in range(days):
+        for h in range(0,24): # For each hour in a day
+            for m in range(0,60): # For each minute every hour
+                x = 0
+                for i in range(0,59): # Calculate the mean value for a minute
+                    x += abs(magdata[data].iloc[i + 60*m + 3600*h + k*86400] - magdata[data].iloc[i+1 + 60*m + 3600*h + k*86400])
+                mean.append(x/59) # Add the value to a list
+    return mean # We actually return dBAC(2) = <dB_1s(t-60s):dB_1s(t)>
+    
 def auroral_index1_1 (magdata, data):
     """
                         AURORAL INDEX 1_1:
@@ -327,6 +358,25 @@ def auroral_index2 (magdata, data, year):
             b0 = 50850
         if data[-1].lower() == 'h':
              b0 = 13070
+    if data[0:3] == 'NUR':
+        if data[-1].lower() == 'x':
+            b0 = 14735
+        if data[-1].lower() == 'y':
+            b0 = 2315
+        if data[-1].lower() == 'z':
+            b0 = 50365
+        if data[-1].lower() == 'h':
+             b0 = 14920
+    if data[0:3] == 'HRN':
+        if data[-1].lower() == 'x':
+            b0 = 7800
+        if data[-1].lower() == 'y':
+            b0 = 1050
+        if data[-1].lower() == 'z':
+            b0 = 54050
+        if data[-1].lower() == 'h':
+             b0 = 7850
+    
 
     mean = list()
     days = int(len(magdata)/86400)
