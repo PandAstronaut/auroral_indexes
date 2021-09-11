@@ -12,7 +12,8 @@ offsetY_kir = {2011:-260,
                2017:0,
                2018:40,
                2019:80,
-               2020:100}
+               2020:100,
+               2021:107}
 
 offsetZ_kir = {2011:51657,
                2012:51695,
@@ -23,7 +24,8 @@ offsetZ_kir = {2011:51657,
                2017:51918,
                2018:51950,
                2019:52000,
-               2020:52055}
+               2020:52055,
+               2021:52030}
 
 offsetH_kir = {2011:10700,
                2012:10680,
@@ -34,7 +36,8 @@ offsetH_kir = {2011:10700,
                2017:10600,
                2018:10588,
                2019:10584,
-               2020:10560}
+               2020:10560,
+               2021:10560}
 
 offsetX_cbb = {2011:4420,
                2012:4500,
@@ -82,7 +85,8 @@ offsetX_abk = {2014:11350,
                2017:11350,
                2018:11280,
                2019:11270,
-               2020:11250}
+               2020:11250,
+               2021:11250}
 
 offsetY_abk = {2014:1600,
                2015:1650,
@@ -90,7 +94,8 @@ offsetY_abk = {2014:1600,
                2017:1725,
                2018:1800,
                2019:1850,
-               2020:1890}
+               2020:1890,
+               2021:1900}
 
 offsetZ_abk = {2014:51880,
                2015:51935,
@@ -98,7 +103,8 @@ offsetZ_abk = {2014:51880,
                2017:52025,
                2018:52075,
                2019:52110,
-               2020:52200}
+               2020:52200,
+               2021:52200}
 
 offsetH_abk = {2014:11470,
                2015:11450,
@@ -106,7 +112,8 @@ offsetH_abk = {2014:11470,
                2017:11450,
                2018:11430,
                2019:11420,
-               2020:11400}
+               2020:11400,
+               2021:11400}
 
 offsetY_blc = {2011:-350,
                2012:-360,
@@ -140,6 +147,22 @@ offsetH_blc = {2011:6450,
                2018:6950,
                2019:7000,
                2020:7075}
+
+offsetX_lyc = {2017:12970,
+               2020:12950,
+               2021:12940}
+
+offsetY_lyc = {2017:1700,
+               2020:1820,
+               2021:1840}
+
+offsetZ_lyc = {2017:50700,
+               2020:50850,
+               2021:50885}
+
+offsetH_lyc = {2017:13100,
+               2020:13070,
+               2021:13070}
 
 offsetX_brw = {2019:8875,
                2020:8920}
@@ -186,7 +209,8 @@ offsetY_ups = {2011:1275,
                2017:1560,
                2018:1615,
                2019:1665,
-               2020:1715}
+               2020:1715,
+               2021:1740}
 
 offsetZ_ups = {2011:48930,
                2012:48970,
@@ -197,7 +221,8 @@ offsetZ_ups = {2011:48930,
                2017:49170,
                2018:49223,
                2019:49275,
-               2020:49330}
+               2020:49330,
+               2021:49360}
 
 def auroral_index1_min (magdata, data):
     mean = list()
@@ -208,28 +233,6 @@ def auroral_index1_min (magdata, data):
                 mean.append((magdata[data].iloc[m + 60*h + k*1440] - magdata[data].iloc[m+1 + 60*h + k*1440])/60)
     return mean
 
-def auroral_index1_2 (magdata, data):
-    """
-                            AURORAL INDEX 1_2:
-                        dBAC(2) = <|dB/dt|>_1min
-                                = <|dB_1sec|>_1min
-                                = ave(dB_1s(t-60s):dB_1s(t))
-                                where dB_1s(t) = |dB(t-1s) - dB(t)|
-
-    This functions returns the first version of auroral index 1 for a specific day.
-    """
-    mean = list()
-    x = 0
-    days = int(len(magdata)/86400)
-    for k in range(days):
-        for h in range(0,24): # For each hour in a day
-            for m in range(0,60): # For each minute every hour
-                x = 0
-                for i in range(0,59): # Calculate the mean value for a minute
-                    x += abs(magdata[data].iloc[i + 60*m + 3600*h + k*86400] - magdata[data].iloc[i+1 + 60*m + 3600*h + k*86400])
-                mean.append(x/59) # Add the value to a list
-    return mean # We actually return dBAC(2) = <dB_1s(t-60s):dB_1s(t)>
-    
 def auroral_index1_1 (magdata, data):
     """
                         AURORAL INDEX 1_1:
@@ -342,7 +345,10 @@ def auroral_index2 (magdata, data, year):
              b0 = offsetH_brw[year]
     if data[0:3] == 'UPS':
         if data[-1].lower() == 'x':
-            b0 = 15122.5
+            if year == 2021:
+                b0 = 15085
+            else:
+                b0 = 15122.5
         if data[-1].lower() == 'y':
             b0 = offsetY_ups[year]
         if data[-1].lower() == 'z':
@@ -351,13 +357,13 @@ def auroral_index2 (magdata, data, year):
              b0 = 15196
     if data[0:3] == 'LYC':
         if data[-1].lower() == 'x':
-            b0 = 12950
+            b0 = offsetX_lyc[year]
         if data[-1].lower() == 'y':
-            b0 = 1820
+            b0 = offsetY_lyc[year]
         if data[-1].lower() == 'z':
-            b0 = 50850
+            b0 = offsetZ_lyc[year]
         if data[-1].lower() == 'h':
-             b0 = 13070
+             b0 = offsetH_lyc[year]
     if data[0:3] == 'NUR':
         if data[-1].lower() == 'x':
             b0 = 14735
@@ -376,7 +382,141 @@ def auroral_index2 (magdata, data, year):
             b0 = 54050
         if data[-1].lower() == 'h':
              b0 = 7850
-    
+    if data[0:3] == 'HLP':
+        if data[-1].lower() == 'x':
+            b0 = 17470
+        if data[-1].lower() == 'y':
+            b0 = 1730
+        if data[-1].lower() == 'z':
+            b0 = 47440
+        if data[-1].lower() == 'h':
+             b0 = 17555
+    if data[0:3] == 'BEL':
+        if data[-1].lower() == 'x':
+            b0 = 18910
+        if data[-1].lower() == 'y':
+            b0 = 2185
+        if data[-1].lower() == 'z':
+            b0 = 46787
+        if data[-1].lower() == 'h':
+             b0 = 19035
+    if data[0:3] == 'WIC':
+        if data[-1].lower() == 'x':
+            b0 = 21000
+        if data[-1].lower() == 'y':
+            b0 = 1685
+        if data[-1].lower() == 'z':
+            b0 = 43952
+        if data[-1].lower() == 'h':
+             b0 = 21070
+    if data[0:3] == 'CLF':
+        if data[-1].lower() == 'x':
+            b0 = 21260
+        if data[-1].lower() == 'y':
+            b0 = 420
+        if data[-1].lower() == 'z':
+            b0 = 43065
+        if data[-1].lower() == 'h':
+             b0 = 21270
+    if data[0:3] == 'BDV':
+        if data[-1].lower() == 'x':
+            b0 = 20415
+        if data[-1].lower() == 'y':
+            b0 = 1510
+        if data[-1].lower() == 'z':
+            b0 = 44415
+        if data[-1].lower() == 'h':
+             b0 = 20470
+    if data[0:3] == 'IQA':
+        if data[-1].lower() == 'x':
+            b0 = 8620
+        if data[-1].lower() == 'y':
+            b0 = -4070
+        if data[-1].lower() == 'z':
+            b0 = 55990
+        if data[-1].lower() == 'h':
+             b0 = 9540
+    if data[0:3] == 'SIT':
+        if data[-1].lower() == 'x':
+            b0 = 15020
+        if data[-1].lower() == 'y':
+            b0 = 5000
+        if data[-1].lower() == 'z':
+            b0 = 52902
+        if data[-1].lower() == 'h':
+             b0 = 15830
+    if data[0:3] == 'FCC':
+        if data[-1].lower() == 'x':
+            b0 = 9610
+        if data[-1].lower() == 'y':
+            b0 = -210
+        if data[-1].lower() == 'z':
+            b0 = 56395
+        if data[-1].lower() == 'h':
+             b0 = 9610
+    if data[0:3] == 'SHU':
+        if data[-1].lower() == 'x':
+            b0 = 19455
+        if data[-1].lower() == 'y':
+            b0 = 3420
+        if data[-1].lower() == 'z':
+            b0 = 48151
+        if data[-1].lower() == 'h':
+             b0 = 19755
+    if data[0:3] == 'CMO':
+        if data[-1].lower() == 'x':
+            b0 = 12100
+        if data[-1].lower() == 'y':
+            b0 = 3630
+        if data[-1].lower() == 'z':
+            b0 = 55020
+        if data[-1].lower() == 'h':
+             b0 = 12635
+    if data[0:3] == 'RES':
+        if data[-1].lower() == 'x':
+            b0 = 2800
+        if data[-1].lower() == 'y':
+            b0 = -940
+        if data[-1].lower() == 'z':
+            b0 = 57400
+        if data[-1].lower() == 'h':
+             b0 = 2960
+    if data[0:3] == 'OTT':
+        if data[-1].lower() == 'x':
+            b0 = 18040
+        if data[-1].lower() == 'y':
+            b0 = -4290
+        if data[-1].lower() == 'z':
+            b0 = 50695
+        if data[-1].lower() == 'h':
+             b0 = 18540
+    if data[0:3] == 'YKC':
+        if data[-1].lower() == 'x':
+            b0 = 9120
+        if data[-1].lower() == 'y':
+            b0 = 2630
+        if data[-1].lower() == 'z':
+            b0 = 57220
+        if data[-1].lower() == 'h':
+             b0 = 9480
+    if data[0:3] == 'STJ':
+        if data[-1].lower() == 'x':
+            b0 = 19240
+        if data[-1].lower() == 'y':
+            b0 = -6020
+        if data[-1].lower() == 'z':
+            b0 = 46710
+        if data[-1].lower() == 'h':
+             b0 = 20160
+    if data[0:3] == 'FRD':
+        if data[-1].lower() == 'x':
+            b0 = 21230
+        if data[-1].lower() == 'y':
+            b0 = -3955
+        if data[-1].lower() == 'z':
+            b0 = 45897
+        if data[-1].lower() == 'h':
+             b0 = 21595
 
     mean = list()
     days = int(len(magdata)/86400)
